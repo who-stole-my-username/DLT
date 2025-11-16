@@ -1,9 +1,14 @@
 import argparse, deepl, os, sys
 
-version = 0.2
+version = 0.2.1
 
 parser = argparse.ArgumentParser()
-parser.add_argument("translate", nargs = "?", help = "Text to translate")
+parser.add_argument("-t", "--translate", metavar = "", help = "Text to be translated.")
+parser.add_argument("-il", "--inputlang", metavar = "", help = "Defines the language of the input (Default = 'EN'), only needed if the default (Detect language) is tweeking.")
+parser.add_argument("-ol", "--outputlang", metavar = "", help = "Defines the language that the input should be returned in (Defualt = 'DE').")
+parser.add_argument("-f", "--formality", metavar = "", help = "Defines the formality of the output: default, more, less, prefer_more, prefer_less.")
+parser.add_argument("-sbc", "--show_billed_characters", metavar = "", help = "Toggles the 'billed_characters' extension of the output.'")
+parser.add_argument("-pf", "--preserve_formatting", metavar = "", help = "Toggles the 'preserve_formatting' setting of the output.")
 args = parser.parse_args()
 
 auth_key = os.getenv("deeplapikey")
@@ -16,10 +21,13 @@ sbc = "true"
 pf = "false"
 
 if args.translate:
-    x = translate(args.translate, inputlang, outputlang, formality, sbc, pf)
-    output(x)
+    cli()
 else:
     main()
+
+def cli():
+    x = translate(args.translate, inputlang, outputlang, formality, sbc, pf)
+    output(x)
 
 def translate(text, inputlang, outputlang, formality, sbc, pf):
 # text = array[string]
