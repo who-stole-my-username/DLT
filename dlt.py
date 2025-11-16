@@ -1,19 +1,23 @@
 import argparse, deepl, os, sys
 
-version = 0.2.1
+version = "0.2.2"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--translate", metavar = "", help = "Text to be translated.")
-parser.add_argument("-il", "--inputlang", metavar = "", help = "Defines the language of the input (Default = 'EN'), only needed if the default (Detect language) is tweeking.")
-parser.add_argument("-ol", "--outputlang", metavar = "", help = "Defines the language that the input should be returned in (Defualt = 'DE').")
+parser.add_argument("-il", "--inputlang", metavar = "", help = "Defines the language of the input, only needed if the default (Detect language) is tweeking.")
+parser.add_argument("-ol", "--outputlang", metavar = "", help = "Defines the language that the input should be returned in.")
 parser.add_argument("-f", "--formality", metavar = "", help = "Defines the formality of the output: default, more, less, prefer_more, prefer_less.")
 parser.add_argument("-sbc", "--show_billed_characters", metavar = "", help = "Toggles the 'billed_characters' extension of the output.'")
 parser.add_argument("-pf", "--preserve_formatting", metavar = "", help = "Toggles the 'preserve_formatting' setting of the output.")
+parser.add_argument("-v", "--verbose", metavar = "", help = "Toggles the 'verbose' setting of the application.")
+parser.add_argument("-c", "--config", action = "store_true", help = "Prints the contense of the programs configuration and exits.")
+parser.add_argument("-V", "--version", action = "version", version=version, help = "Prints the application version and exits.")
 args = parser.parse_args()
 
 auth_key = os.getenv("deeplapikey")
 deepl_client = deepl.DeepLClient(auth_key)
 
+# [TEMP CONFIG]
 inputlang = "EN"
 outputlang = "DE"
 formality = "default"
@@ -26,6 +30,12 @@ else:
     main()
 
 def cli():
+    if args.config:
+        print()
+    else:
+        sys.exit()
+
+
     x = translate(args.translate, inputlang, outputlang, formality, sbc, pf)
     output(x)
 
@@ -53,6 +63,6 @@ def output(x):
 
 def main():
     os.system("clear")
-
+    sys.exit()
 
 
