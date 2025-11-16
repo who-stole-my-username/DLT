@@ -1,9 +1,9 @@
 import argparse, deepl, os, sys
 
-version = 0.1
+version = 0.2
 
 parser = argparse.ArgumentParser()
-parser.add_argument("translate")
+parser.add_argument("translate", nargs = "?", help = "Text to translate")
 args = parser.parse_args()
 
 auth_key = os.getenv("deeplapikey")
@@ -15,7 +15,11 @@ formality = "default"
 sbc = "true"
 pf = "false"
 
-
+if args.translate:
+    x = translate(args.translate, inputlang, outputlang, formality, sbc, pf)
+    output(x)
+else:
+    main()
 
 def translate(text, inputlang, outputlang, formality, sbc, pf):
 # text = array[string]
@@ -27,8 +31,8 @@ def translate(text, inputlang, outputlang, formality, sbc, pf):
 #    less - for a more informal language
 #    prefer_more - for a more formal language if available, otherwise fallback to default formality
 #    prefer_less - for a more informal language if available, otherwise fallback to default formality
-# show_billed_characters = boolean:
-#    returns: "billed_characters":int
+#[REMOVED FROM INPUT] show_billed_characters = boolean:
+#                       returns: "billed_characters":int
 # preserve_formatting = boolean:
 #    Punctuation at the beginning and end of the sentence
 #    Upper/lower case at the beginning of the sentence
@@ -44,6 +48,3 @@ def main():
 
 
 
-x = (translate(args.translate, inputlang, outputlang, formality, sbc, pf))
-print(x)
-print(x.billed_characters)
