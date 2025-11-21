@@ -1,19 +1,22 @@
-import argparse, deepl, os, sys
+import argparse, deepl, os, sys, 
+from pathlib import Path
 
-version = "0.2.2"
+version = "0.2.3"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--translate", metavar = "", help = "Text to be translated.")
 parser.add_argument("-il", "--inputlang", metavar = "", help = "Defines the language of the input, only needed if the default (Detect language) is tweeking.")
 parser.add_argument("-ol", "--outputlang", metavar = "", help = "Defines the language that the input should be returned in.")
 parser.add_argument("-f", "--formality", metavar = "", help = "Defines the formality of the output: default, more, less, prefer_more, prefer_less.")
-parser.add_argument("-sbc", "--show_billed_characters", metavar = "", help = "Toggles the 'billed_characters' extension of the output.'")
+parser.add_argument("-sbc", "--show_billed_characters", metavar = "", help = "Toggles the 'billed_characters' extension of the output.")
 parser.add_argument("-pf", "--preserve_formatting", metavar = "", help = "Toggles the 'preserve_formatting' setting of the output.")
 parser.add_argument("-v", "--verbose", metavar = "", help = "Toggles the 'verbose' setting of the application.")
 parser.add_argument("-c", "--config", action = "store_true", help = "Prints the contense of the programs configuration and exits.")
 parser.add_argument("-V", "--version", action = "version", version=version, help = "Prints the application version and exits.")
 args = parser.parse_args()
 
+
+    
 auth_key = os.getenv("deeplapikey")
 deepl_client = deepl.DeepLClient(auth_key)
 
@@ -24,10 +27,18 @@ formality = "default"
 sbc = "true"
 pf = "false"
 
-if args.translate:
-    cli()
-else:
-    main()
+def checkConfig():
+    path = Path.home() / ".config" / "dlt" / "config.ini"
+
+    if path.exists():
+        print(y)
+    else:
+        makeConfig(path)
+
+def makeConfig(x):
+    Path(x).parent.mkdir(parents = True, exist_ok = True)
+    Path(x).touch(exist_ok = True)
+
 
 def cli():
     if args.config:
@@ -62,7 +73,12 @@ def output(x):
     print(x)
 
 def main():
+    checkConfig()
     os.system("clear")
     sys.exit()
 
-
+if __name__ == "__main__":
+    if args.translate:
+        cli()
+    else:
+        main()
