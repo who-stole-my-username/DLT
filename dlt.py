@@ -1,7 +1,7 @@
 import argparse, deepl, os, sys, configparser
 from pathlib import Path
 
-version = "0.3.0"
+version = "0.3.1"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--translate", metavar = "", help = "Text to be translated.")
@@ -13,10 +13,8 @@ parser.add_argument("-pf", "--preserve_formatting", metavar = "", help = "Toggle
 parser.add_argument("-v", "--verbose", metavar = "", help = "Toggles the 'verbose' setting of the application.")
 parser.add_argument("-c", "--config", action = "store_true", help = "Prints the contense of the programs configuration and exits.")
 parser.add_argument("-V", "--version", action = "version", version=version, help = "Prints the application version and exits.")
+parser.add_argument("-sa", "--set_api", metavar = "", help = "Sets your DeepL API key.")
 args = parser.parse_args()
-    
-auth_key = os.getenv("deeplapikey")
-deepl_client = deepl.DeepLClient(auth_key)
 
 loaded_settings = {
         "inputlang": "EN",
@@ -24,7 +22,8 @@ loaded_settings = {
         "formality": "default",
         "sbc": "true",
         "pf": "false",
-        "verbose": "false"
+        "verbose": "false",
+        "APIkey": "PLACEHOLDER"
         }
 
 cfgpath = Path.home() / ".config" / "dlt" / "config.ini"
@@ -85,6 +84,9 @@ def cli():
 
     if args.config:
         printConfig()
+
+    if args.set_api:
+        updateConfig("CONFIG", APIkey, args.set_api)
     
     if args.inputlang:
         updateConfig("TEXT CONFIG", inputlang, args.inputlang)
@@ -124,7 +126,8 @@ def translate(text, inputlang, outputlang, formality, sbc, pf):
 # preserve_formatting = boolean:
 #    Punctuation at the beginning and end of the sentence
 #    Upper/lower case at the beginning of the sentence
-
+    auth_key = loaded_settigns[APIkey]
+    deepl_client = deepl.DeepLClient(auth_key)
     result = deepl_client.translate_text(text = text,source_lang = inputlang ,target_lang = outputlang, formality = formality, preserve_formatting = pf)
     return result
 
