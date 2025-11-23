@@ -1,10 +1,11 @@
 import argparse, deepl, os, sys, configparser
 from pathlib import Path
 
-version = "0.3.1"
+version = "0.3.2"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--translate", metavar = "", help = "Text to be translated.")
+parser.add_argument("-doc", "--document", metavar = "", help = "Document to be translated.")
 parser.add_argument("-il", "--inputlang", metavar = "", help = "Defines the language of the input, only needed if the default (Detect language) is tweeking.")
 parser.add_argument("-ol", "--outputlang", metavar = "", help = "Defines the language that the input should be returned in.")
 parser.add_argument("-f", "--formality", metavar = "", help = "Defines the formality of the output: default, more, less, prefer_more, prefer_less.")
@@ -14,6 +15,8 @@ parser.add_argument("-v", "--verbose", metavar = "", help = "Toggles the 'verbos
 parser.add_argument("-c", "--config", action = "store_true", help = "Prints the contense of the programs configuration and exits.")
 parser.add_argument("-V", "--version", action = "version", version=version, help = "Prints the application version and exits.")
 parser.add_argument("-sa", "--set_api", metavar = "", help = "Sets your DeepL API key.")
+parser.add_argument("-H", "--history", metavar = "", help = "Toggles the translation history / caching of the application.")
+parser.add_argument("-C", "--colours", metavar = "", help = "Toggles the colours of the application.")
 args = parser.parse_args()
 
 loaded_settings = {
@@ -65,9 +68,9 @@ def updateConfig(section, key, value):
 def printConfig():
     cfgparser.read(cfgpath)
     
-    for section in cfg.sections():
+    for section in cfgparser.sections():
         print(f"[{section}]")
-        for key, value in cfg[section].items():
+        for key, value in cfgparser[section].items():
             print(f"{key} = {value}")
         print()
 
@@ -140,7 +143,7 @@ def main():
     sys.exit()
 
 if __name__ == "__main__":
-    if args.translate:
+    if any(vars(args).values()):
         cli()
     else:
         main()
