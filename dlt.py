@@ -1,7 +1,7 @@
 import argparse, deepl, os, sys, configparser
 from pathlib import Path
 
-version = "0.2.5"
+version = "0.2.6"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--translate", metavar = "", help = "Text to be translated.")
@@ -33,7 +33,7 @@ cfgparser = configparser.ConfigParser()
 
 def checkConfig():
     if cfgpath.exists():
-        print(y)
+        return
     else:
         makeConfig()
 
@@ -52,6 +52,7 @@ def writeDefaultConfig():
             "sbc": "true",
             "pf": "pf"
             }
+
     with cfgpath.open("w") as cfg:
         cfgparser.write(cfg)
 
@@ -61,15 +62,20 @@ def updateConfig(key, value):
     with path.open("w") as cfg:
         cfgparser.write(cfg)
 
-def readConfig():
+def printConfig():
     cfgparser.read(cfgpath)
+    
+    for section in cfg.sections():
+        print(f"[{section}]")
+        for key, value in cfg[section].items():
+            print(f"{key} = {value}")
+        print()
 
 def cli():
     if args.config:
         print()
     else:
         sys.exit()
-
 
     x = translate(args.translate, inputlang, outputlang, formality, sbc, pf)
     output(x)
