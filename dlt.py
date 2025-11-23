@@ -1,7 +1,7 @@
-import argparse, deepl, os, sys, configparser, 
+import argparse, deepl, os, sys, configparser
 from pathlib import Path
 
-version = "0.2.4"
+version = "0.2.5"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--translate", metavar = "", help = "Text to be translated.")
@@ -37,13 +37,13 @@ def checkConfig():
     else:
         makeConfig()
 
-def makeConfig(x):
+def makeConfig():
     Path(cfgpath).parent.mkdir(parents = True, exist_ok = True)
     Path(cfgpath).touch(exist_ok = True)
     writeDefaultConfig()
 
 def writeDefaultConfig():
-    cfgparser["CONFIG"]{
+    cfgparser["CONFIG"] = {
             "APIkey": "Not set",
             "verbose": "false",
             "inputlang": "EN",
@@ -53,7 +53,16 @@ def writeDefaultConfig():
             "pf": "pf"
             }
     with cfgpath.open("w") as cfg:
-        configparser.write(cfg)
+        cfgparser.write(cfg)
+
+def updateConfig(key, value):
+    cfgparser["CONFIG"][key] = value
+
+    with path.open("w") as cfg:
+        cfgparser.write(cfg)
+
+def readConfig():
+    cfgparser.read(cfgpath)
 
 def cli():
     if args.config:
