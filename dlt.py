@@ -1,7 +1,7 @@
 import argparse, deepl, os, sys, configparser
 from pathlib import Path
 
-version = "0.2.6"
+version = "0.3.0"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--translate", metavar = "", help = "Text to be translated.")
@@ -14,19 +14,18 @@ parser.add_argument("-v", "--verbose", metavar = "", help = "Toggles the 'verbos
 parser.add_argument("-c", "--config", action = "store_true", help = "Prints the contense of the programs configuration and exits.")
 parser.add_argument("-V", "--version", action = "version", version=version, help = "Prints the application version and exits.")
 args = parser.parse_args()
-
-
     
 auth_key = os.getenv("deeplapikey")
 deepl_client = deepl.DeepLClient(auth_key)
 
-# [TEMP CONFIG]
-inputlang = "EN"
-outputlang = "DE"
-formality = "default"
-sbc = "true"
-pf = "false"
-
+loaded_settings = {
+        "inputlang": "EN",
+        "outputlang": "DE",
+        "formality": "default",
+        "sbc": "true",
+        "pf": "false",
+        "verbose": "false"
+        }
 
 cfgpath = Path.home() / ".config" / "dlt" / "config.ini"
 cfgparser = configparser.ConfigParser()
@@ -46,18 +45,20 @@ def writeDefaultConfig():
     cfgparser["CONFIG"] = {
             "APIkey": "Not set",
             "verbose": "false",
+            "sbc": "true"
+            }
+    cfgparser["TEXT CONFIG"] = {
             "inputlang": "EN",
             "outputlang": "DE",
             "formality": "default",
-            "sbc": "true",
-            "pf": "pf"
+            "pf": "false"
             }
 
     with cfgpath.open("w") as cfg:
         cfgparser.write(cfg)
 
-def updateConfig(key, value):
-    cfgparser["CONFIG"][key] = value
+def updateConfig(section, key, value):
+    cfgparser[section][key] = value
 
     with path.open("w") as cfg:
         cfgparser.write(cfg)
@@ -71,14 +72,42 @@ def printConfig():
             print(f"{key} = {value}")
         print()
 
-def cli():
-    if args.config:
-        print()
-    else:
-        sys.exit()
+def loadConfig():
+    cfgparser.read(cfgpath)
 
-    x = translate(args.translate, inputlang, outputlang, formality, sbc, pf)
-    output(x)
+    for section in cfg.sections():
+        for key, value in cfg[section].items():
+            if key in loaded_settings:
+                settings[key] = value
+
+def cli():
+    checkConfig()
+
+    if args.config:
+        printConfig()
+    
+    if args.inputlang:
+        updateConfig("TEXT CONFIG", inputlang, args.inputlang)
+
+    if args.outputlang:
+        updateConfig("TEXT CONFIG", outputlang, args.outputlang)
+
+    if args.formality:
+        updateConfig("TEXT CONFIG", formality, args.formality)
+
+    if args.show_billed_characters:
+        updateConfig("CONFIG", sbc, args.show_billed_characters)
+
+    if args.preserve_formatting:
+        updateConfig("TEXT CONFIG", pf, args.preserve_formatting)
+
+    if args.verbose:
+        updateConfig("TEXT CONFIG", verbose, args.verbose)
+
+    if args.translate:
+        loadConfig()
+        x = translate(args.translate, loaded_setting["inputlang"], loaded_setting["outputlang"], loaded_setting["formality"], loaded_setting["sbc"],loaded_setting["pf"])
+        output(x)
 
 def translate(text, inputlang, outputlang, formality, sbc, pf):
 # text = array[string]
