@@ -1,7 +1,7 @@
-import argparse, deepl, os, sys, 
+import argparse, deepl, os, sys, configparser, 
 from pathlib import Path
 
-version = "0.2.3"
+version = "0.2.4"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--translate", metavar = "", help = "Text to be translated.")
@@ -27,18 +27,33 @@ formality = "default"
 sbc = "true"
 pf = "false"
 
-def checkConfig():
-    path = Path.home() / ".config" / "dlt" / "config.ini"
 
-    if path.exists():
+cfgpath = Path.home() / ".config" / "dlt" / "config.ini"
+cfgparser = configparser.ConfigParser()
+
+def checkConfig():
+    if cfgpath.exists():
         print(y)
     else:
-        makeConfig(path)
+        makeConfig()
 
 def makeConfig(x):
-    Path(x).parent.mkdir(parents = True, exist_ok = True)
-    Path(x).touch(exist_ok = True)
+    Path(cfgpath).parent.mkdir(parents = True, exist_ok = True)
+    Path(cfgpath).touch(exist_ok = True)
+    writeDefaultConfig()
 
+def writeDefaultConfig():
+    cfgparser["CONFIG"]{
+            "APIkey": "Not set",
+            "verbose": "false",
+            "inputlang": "EN",
+            "outputlang": "DE",
+            "formality": "default",
+            "sbc": "true",
+            "pf": "pf"
+            }
+    with cfgpath.open("w") as cfg:
+        configparser.write(cfg)
 
 def cli():
     if args.config:
