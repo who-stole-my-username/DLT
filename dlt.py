@@ -1,4 +1,8 @@
-import argparse, deepl, os, sys, configparser
+import argparse
+import deepl
+import os
+import sys
+import configparser
 from pathlib import Path
 
 version = "0.3.2"
@@ -35,8 +39,7 @@ cfgparser = configparser.ConfigParser()
 def checkConfig():
     if cfgpath.exists():
         return
-    else:
-        makeConfig()
+    makeConfig()
 
 def makeConfig():
     Path(cfgpath).parent.mkdir(parents = True, exist_ok = True)
@@ -62,12 +65,12 @@ def writeDefaultConfig():
 def updateConfig(section, key, value):
     cfgparser[section][key] = value
 
-    with path.open("w") as cfg:
+    with Path.open("w") as cfg:
         cfgparser.write(cfg)
 
 def printConfig():
     cfgparser.read(cfgpath)
-    
+
     for section in cfgparser.sections():
         print(f"[{section}]")
         for key, value in cfgparser[section].items():
@@ -77,10 +80,10 @@ def printConfig():
 def loadConfig():
     cfgparser.read(cfgpath)
 
-    for section in cfg.sections():
-        for key, value in cfg[section].items():
+    for section in cfgparser.sections():
+        for key, value in cfgparser[section].items():
             if key in loaded_settings:
-                settings[key] = value
+                loaded_settings[key] = value
 
 def cli():
     checkConfig()
@@ -89,36 +92,36 @@ def cli():
         printConfig()
 
     if args.set_api:
-        updateConfig("CONFIG", APIkey, args.set_api)
-    
+        updateConfig("CONFIG", "APIkey", args.set_api)
+
     if args.inputlang:
-        updateConfig("TEXT CONFIG", inputlang, args.inputlang)
+        updateConfig("TEXT CONFIG", "inputlang", args.inputlang)
 
     if args.outputlang:
-        updateConfig("TEXT CONFIG", outputlang, args.outputlang)
+        updateConfig("TEXT CONFIG", "outputlang", args.outputlang)
 
     if args.formality:
-        updateConfig("TEXT CONFIG", formality, args.formality)
+        updateConfig("TEXT CONFIG", "formality", args.formality)
 
     if args.show_billed_characters:
-        updateConfig("CONFIG", sbc, args.show_billed_characters)
+        updateConfig("CONFIG", "sbc", args.show_billed_characters)
 
     if args.preserve_formatting:
-        updateConfig("TEXT CONFIG", pf, args.preserve_formatting)
+        updateConfig("TEXT CONFIG", "pf", args.preserve_formatting)
 
     if args.verbose:
-        updateConfig("TEXT CONFIG", verbose, args.verbose)
+        updateConfig("TEXT CONFIG", "verbose", args.verbose)
 
     if args.translate:
         loadConfig()
-        x = translate(args.translate, loaded_setting["inputlang"], loaded_setting["outputlang"], loaded_setting["formality"], loaded_setting["sbc"],loaded_setting["pf"])
+        x = translate(args.translate, loaded_settings["inputlang"], loaded_settings["outputlang"], loaded_settings["formality"], loaded_settings["sbc"],loaded_settings["pf"])
         output(x)
 
 def translate(text, inputlang, outputlang, formality, sbc, pf):
 # text = array[string]
 # source_lang = string
 # target_lang = string
-# formality = string:     
+# formality = string:
 #    default (default)
 #    more - for a more formal language
 #    less - for a more informal language
@@ -129,7 +132,7 @@ def translate(text, inputlang, outputlang, formality, sbc, pf):
 # preserve_formatting = boolean:
 #    Punctuation at the beginning and end of the sentence
 #    Upper/lower case at the beginning of the sentence
-    auth_key = loaded_settigns[APIkey]
+    auth_key = loaded_settings["APIkey"]
     deepl_client = deepl.DeepLClient(auth_key)
     result = deepl_client.translate_text(text = text,source_lang = inputlang ,target_lang = outputlang, formality = formality, preserve_formatting = pf)
     return result
